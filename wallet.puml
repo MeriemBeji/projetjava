@@ -1,0 +1,43 @@
+@startuml wallet
+class Wallet {
+    - walletId: String
+    - ownerId: String
+    - balance: double
+    + Wallet(ownerId: String)
+    + getWalletId(): String
+    + getOwnerId(): String
+    + getBalance(): double
+    + deposit(amount: double): void
+    + withdraw(amount: double): boolean
+    + transfer(toWalletId: String, amount: double): boolean
+    + getTransactionHistory(): List<Transaction>
+}
+
+class User {
+    - userId: String
+    - username: String
+    - password: String
+    + User(username: String, password: String)
+    + getUserId(): String
+    + getUsername(): String
+    + getPassword(): String
+    + createWallet(): Wallet
+}
+
+Wallet "1" --> "1" User : owns
+
+class Transaction {
+    - transactionId: String
+    - senderWalletId: String
+    - receiverWalletId: String
+    - amount: double
+    + Transaction(senderWalletId: String, receiverWalletId: String, amount: double)
+    + getTransactionId(): String
+    + getSenderWalletId(): String
+    + getReceiverWalletId(): String
+    + getAmount(): double
+}
+
+Wallet "0..*" --> "0..*" Transaction : contains
+
+@enduml

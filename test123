@@ -1,0 +1,50 @@
+public static List<BankCommand> retrieveFromDatabase() {
+        List<BankCommand> bankCommands = new ArrayList<>();
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM bank_command");
+             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM app_command")) {
+
+            ResultSet resultSet = statement.executeQuery();
+            ResultSet res = stmt.executeQuery();
+
+            while (resultSet.next() && res.next()) {
+                int id_bank_command = resultSet.getInt("id_bank_command");
+                String location = resultSet.getString("location");
+                int id_bank = resultSet.getInt("id_bank");
+
+                bankCommands.add(new BankCommand(id_bank_command, location, id_bank));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bankCommands;
+    }
+    class ConnectionPool {
+    private static final String JDBC_URL = "jdbc:mysql://localhost:4306/bankcommand";
+    private static final String USERNAME = "samer";
+    private static final String PASSWORD = "mmm";
+    private static final int MAX_TOTAL_CONNECTIONS = 10;
+
+    private static BasicDataSource dataSource;
+
+
+    static {
+        dataSource = new BasicDataSource();
+        dataSource.setUrl(JDBC_URL);
+        dataSource.setUsername(USERNAME);
+        dataSource.setPassword(PASSWORD);
+        dataSource.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+    }
+
+
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+
+    public static void close() throws SQLException {
+        dataSource.close();
+    }
+}
